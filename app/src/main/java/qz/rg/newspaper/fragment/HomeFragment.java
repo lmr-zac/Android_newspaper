@@ -1,10 +1,13 @@
 package qz.rg.newspaper.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,9 +29,12 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import qz.rg.newspaper.R;
+import qz.rg.newspaper.activity.VideoActivity;
 import qz.rg.newspaper.adapter.NewsAdapter;
 import qz.rg.newspaper.bean.News;
+import qz.rg.newspaper.utils.Constant;
 import qz.rg.newspaper.utils.HttpUtil;
+import qz.rg.newspaper.utils.JsonParseUtil;
 
 /**
  * A fragment representing a list of Items.
@@ -45,11 +51,24 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home,container,false);
         initViews(view);
         fetchDataFromServer();
+
+        // 新增：设置适配器点击监听器
+        // 新增：设置适配器点击监听器
+        adapter.setOnItemClickListener(news -> {
+            // 创建 Intent 跳转到 VideoActivity
+            Intent intent = new Intent(getActivity(), VideoActivity.class);
+            intent.putExtra("news_title", news.getTitle()); // 传递新闻标题
+            startActivity(intent); // 启动 VideoActivity
+        });
+
         return view;
     }
 
+
+
+
     private void fetchDataFromServer() {
-        String serverUrl = "http://192.168.31.184:8080/NewsServer/news.json";
+        String serverUrl = Constant.SERVER_URL+ "news.json";
         Log.d("HomeFragment", "请求 URL: " + serverUrl); // 打印 URL
         HttpUtil.sendGetRequest(serverUrl, new Callback() {
             @Override
@@ -81,10 +100,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void parseJsonData(String json) {
-        Log.d("HomeFragment", "原始 JSON 数据: " + json); // 打印原始数据
-        Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<News>>(){}.getType();
-        List<News> tempList = gson.fromJson(json, listType);
+        Type listType = new TypeToken<ArrayList<News>>() {
+        }.getType();
+        //调用JsonParseUtil
+        List<News> tempList = JsonParseUtil.parseList(json, listType);
         Log.d("HomeFragment", "解析到数据条数: " + tempList.size()); // 检查数据量
 
         if (getActivity() != null) {

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +28,16 @@ import qz.rg.newspaper.bean.News;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private List<News> newsList;
     private Context context;
+    // 新增：点击监听器接口
+    private OnItemClickListener listener;
+    public interface OnItemClickListener {
+        void onItemClick(News news);
+    }
+    // 新增：设置监听器方法
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
 
     public NewsAdapter(Context context, List<News> newsList) {
         this.context = context;
@@ -42,8 +53,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-
         News news = newsList.get(position);
         holder.title.setText(news.getTitle());
         holder.content.setText(news.getContent());
@@ -69,9 +78,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
                         return false;
                     }
                 })
-
-
                 .into(holder.image);
+
+        // 新增：设置item点击事件
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(news); // 传递被点击的新闻对象
+            }
+        });
+
+
     }
 
     @Override
