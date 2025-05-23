@@ -3,6 +3,7 @@ package qz.rg.newspaper.activity;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -96,10 +97,12 @@ public class NewsDetailActivity extends AppCompatActivity {
     // 添加视频块
     private void addVideoView(String videoUrl) {
         VideoView videoView = new VideoView(this);
-        videoView.setLayoutParams(new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 300 // 视频区域高度
-        ));
+        );
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL; // 水平居中
+        videoView.setLayoutParams(layoutParams);
         videoView.setPadding(0, 8, 0, 8);
 
         // 绑定媒体控制器

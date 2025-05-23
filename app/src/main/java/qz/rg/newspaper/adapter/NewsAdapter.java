@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,16 +28,17 @@ import qz.rg.newspaper.bean.News;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private List<News> newsList;
     private Context context;
-    // 新增：点击监听器接口
+    // 点击监听器接口
     private OnItemClickListener listener;
+
     public interface OnItemClickListener {
         void onItemClick(News news);
     }
-    // 新增：设置监听器方法
+
+    // 设置监听器方法
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
-
 
     public NewsAdapter(Context context, List<News> newsList) {
         this.context = context;
@@ -56,10 +56,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         News news = newsList.get(position);
         holder.title.setText(news.getTitle());
-        holder.content.setText(news.getContent());
         holder.source.setText(news.getSource());
         holder.time.setText(news.getPublishTime());
-
 
         // 提取简介：优先使用 contentBlocks 中的第一个 text 内容
         String content = "";
@@ -93,41 +91,15 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             imageUrl = news.getImageUrl() == null ? "" : news.getImageUrl();
         }
 
-        // 加载图片（处理空 URL 情况）
-        if (!imageUrl.isEmpty()) {
-            // 使用 Glide 加载图片
-            Glide.with(context)
-                    .load(news.getImageUrl())
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.error)
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                                    Target<Drawable> target, boolean isFirstResource) {
-                            Log.e("Glide", "图片加载失败: " + news.getImageUrl());
-                            return false;
-                        }
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model,
-                                                       Target<Drawable> target, DataSource dataSource,
-                                                       boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .into(holder.image);
-        } else {
-            holder.image.setImageResource(R.drawable.error); // 无图时显示错误占位
-        }
+        // 使用封装的方法加载图片
+        loadImage(holder.image, imageUrl);
 
-
-        // 新增：设置item点击事件
+        // 设置item点击事件
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(news); // 传递被点击的新闻对象
             }
         });
-
-
     }
 
     @Override
@@ -147,5 +119,35 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             source = itemView.findViewById(R.id.news_source);
             time = itemView.findViewById(R.id.news_time);
         }
+    }
+
+    // 新增：封装图片加载逻辑的方法
+    private void loadImage(ImageView imageView, String url) {
+        Log.d("NewsAdapter", "尝试加载图片 URL: " + url);
+        if (url == null || url.isEmpty()) {
+            imageView.setImageResource(R.drawable.error);
+            return;
+        }
+
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.error)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Drawable> target, boolean isFirstResource) {
+                        Log.e("Glide", "图片加载失败: " + url, e); // 添加异常信息
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model,
+                                                   Target<Drawable> target, DataSource dataSource,
+                                                   boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .into(imageView);
     }
 }
