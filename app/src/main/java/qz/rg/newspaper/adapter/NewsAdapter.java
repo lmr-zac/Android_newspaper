@@ -23,6 +23,7 @@ import com.bumptech.glide.request.target.Target;
 import java.util.List;
 
 import qz.rg.newspaper.R;
+import qz.rg.newspaper.bean.ContentBlock;
 import qz.rg.newspaper.bean.News;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
@@ -59,26 +60,65 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         holder.source.setText(news.getSource());
         holder.time.setText(news.getPublishTime());
 
-        // 使用 Glide 加载图片
-        Glide.with(context)
-                .load(news.getImageUrl())
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.error)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                                Target<Drawable> target, boolean isFirstResource) {
-                        Log.e("Glide", "图片加载失败: " + news.getImageUrl());
-                        return false;
-                    }
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model,
-                                                   Target<Drawable> target, DataSource dataSource,
-                                                   boolean isFirstResource) {
-                        return false;
-                    }
-                })
-                .into(holder.image);
+
+        // 提取简介：优先使用 contentBlocks 中的第一个 text 内容
+        String content = "";
+        List<ContentBlock> blocks = news.getContentBlocks();
+        if (blocks != null && !blocks.isEmpty()) {
+            for (ContentBlock block : blocks) {
+                if ("text".equals(block.getType())) {
+                    content = block.getContent();
+                    break; // 取第一个文本块作为简介
+                }
+            }
+        }
+        // 备用：如果 contentBlocks 中无文本，使用原 content 字段
+        if (content.isEmpty()) {
+            content = news.getContent() == null ? "" : news.getContent();
+        }
+        holder.content.setText(content);
+
+        // 提取主图：优先使用 contentBlocks 中的第一个 image 地址
+        String imageUrl = "";
+        if (blocks != null && !blocks.isEmpty()) {
+            for (ContentBlock block : blocks) {
+                if ("image".equals(block.getType())) {
+                    imageUrl = block.getUrl();
+                    break; // 取第一个图片块作为主图
+                }
+            }
+        }
+        // 备用：如果 contentBlocks 中无图片，使用原 imageUrl 字段
+        if (imageUrl.isEmpty()) {
+            imageUrl = news.getImageUrl() == null ? "" : news.getImageUrl();
+        }
+
+        // 加载图片（处理空 URL 情况）
+        if (!imageUrl.isEmpty()) {
+            // 使用 Glide 加载图片
+            Glide.with(context)
+                    .load(news.getImageUrl())
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.error)
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                    Target<Drawable> target, boolean isFirstResource) {
+                            Log.e("Glide", "图片加载失败: " + news.getImageUrl());
+                            return false;
+                        }
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model,
+                                                       Target<Drawable> target, DataSource dataSource,
+                                                       boolean isFirstResource) {
+                            return false;
+                        }
+                    })
+                    .into(holder.image);
+        } else {
+            holder.image.setImageResource(R.drawable.error); // 无图时显示错误占位
+        }
+
 
         // 新增：设置item点击事件
         holder.itemView.setOnClickListener(v -> {

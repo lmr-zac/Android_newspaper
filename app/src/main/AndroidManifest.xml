@@ -18,7 +18,7 @@
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.VideoActivity"
+            android:name=".activity.NewsDetailActivity"
             android:exported="false" />
         <activity
             android:name=".activity.MainActivity"

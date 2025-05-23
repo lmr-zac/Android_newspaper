@@ -6,8 +6,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
@@ -29,7 +26,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import qz.rg.newspaper.R;
-import qz.rg.newspaper.activity.VideoActivity;
+import qz.rg.newspaper.activity.NewsDetailActivity;
 import qz.rg.newspaper.adapter.NewsAdapter;
 import qz.rg.newspaper.bean.News;
 import qz.rg.newspaper.utils.Constant;
@@ -52,13 +49,13 @@ public class HomeFragment extends Fragment {
         initViews(view);
         fetchDataFromServer();
 
-        // 新增：设置适配器点击监听器
-        // 新增：设置适配器点击监听器
+
+        // 跳转：设置适配器点击监听器
         adapter.setOnItemClickListener(news -> {
-            // 创建 Intent 跳转到 VideoActivity
-            Intent intent = new Intent(getActivity(), VideoActivity.class);
-            intent.putExtra("news_title", news.getTitle()); // 传递新闻标题
-            startActivity(intent); // 启动 VideoActivity
+            // 创建 Intent 跳转到 NewsDetailActivity
+            Intent intent = new Intent(getActivity(), NewsDetailActivity.class);
+            intent.putExtra("news", news); // 传递新闻标题
+            startActivity(intent); // 启动 NewsDetailActivity
         });
 
         return view;
@@ -105,6 +102,14 @@ public class HomeFragment extends Fragment {
         //调用JsonParseUtil
         List<News> tempList = JsonParseUtil.parseList(json, listType);
         Log.d("HomeFragment", "解析到数据条数: " + tempList.size()); // 检查数据量
+
+        // 验证 contentBlocks 是否解析成功（可选）
+        for (News news : tempList) {
+            Log.d("HomeFragment", "新闻标题: " + news.getTitle());
+            if (news.getContentBlocks() != null) {
+                Log.d("HomeFragment", "contentBlocks 数量: " + news.getContentBlocks().size());
+            }
+        }
 
         if (getActivity() != null) {
             getActivity().runOnUiThread(() -> {

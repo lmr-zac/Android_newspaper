@@ -1,9 +1,7 @@
 package qz.rg.newspaper.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
@@ -20,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
     private VideoFragment videoFragment;
     private MyFragment myFragment;
-    private VideoActivity videoActivity;
+
 
 
     @Override
@@ -33,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         videoFragment = new VideoFragment();
         myFragment = new MyFragment();
 
-        videoActivity = new VideoActivity();
+
 
         // 添加并隐藏videoFragment和myFragment
         FragmentTransaction initialTransaction = getSupportFragmentManager().beginTransaction();
