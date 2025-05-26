@@ -1,5 +1,6 @@
 package qz.rg.newspaper.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,10 +10,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
@@ -42,6 +49,14 @@ public class HomeFragment extends Fragment {
     private NewsAdapter adapter;
     private List<News> newsList = new ArrayList<>();
 
+    private ImageView ivRefreshCircle;
+    private RotateAnimation rotateAnimation;
+
+    private float startY; // 触摸起始Y坐标
+    private boolean isRefreshing = false; // 是否正在刷新
+    private static final int TRIGGER_DISTANCE = 150; // 触发刷新的最小下拉距离（dp）
+
+    @SuppressLint("ClickableViewAccessibility")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,13 +64,53 @@ public class HomeFragment extends Fragment {
         initViews(view);
         fetchDataFromServer();
 
-
         // 跳转：设置适配器点击监听器
         adapter.setOnItemClickListener(news -> {
             // 创建 Intent 跳转到 NewsDetailActivity
             Intent intent = new Intent(getActivity(), NewsDetailActivity.class);
             intent.putExtra("news", news); // 传递新闻标题
             startActivity(intent); // 启动 NewsDetailActivity
+        });
+
+        ivRefreshCircle = view.findViewById(R.id.iv_refresh_circle);
+        recyclerView = view.findViewById(R.id.recycler_view);
+
+        // 初始化旋转动画
+        rotateAnimation = (RotateAnimation) AnimationUtils.loadAnimation(getContext(), R.anim.anim_rotate);
+
+        // 监听RecyclerView的触摸事件
+        recyclerView.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    startY = event.getY(); // 记录按下位置
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (isRefreshing) break; // 正在刷新时不处理
+                    float currentY = event.getY();
+                    float deltaY = currentY - startY; // 下拉距离
+                    if (deltaY > 0 && recyclerView.getChildAt(0).getTop() == 0) { // 顶部下拉
+                        // 根据下拉距离调整刷新圆的透明度和大小（可选）
+                        float progress = deltaY / TRIGGER_DISTANCE;
+                        ivRefreshCircle.setAlpha(Math.min(progress, 1f)); // 透明度0~1
+                        ivRefreshCircle.setScaleX(Math.min(progress, 1f)); // 缩放0~1
+                        ivRefreshCircle.setScaleY(Math.min(progress, 1f));
+                        ivRefreshCircle.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float finalDeltaY = event.getY() - startY;
+                    if (finalDeltaY >= TRIGGER_DISTANCE) { // 达到触发距离
+                        startRefresh();
+                    } else {
+                        // 未达到触发距离，隐藏刷新圆
+                        ivRefreshCircle.setVisibility(View.GONE);
+                        ivRefreshCircle.setAlpha(1f);
+                        ivRefreshCircle.setScaleX(1f);
+                        ivRefreshCircle.setScaleY(1f);
+                    }
+                    break;
+            }
+            return false;
         });
 
         return view;
@@ -123,5 +178,22 @@ public class HomeFragment extends Fragment {
                     Toast.makeText(getContext(), "数据解析失败", Toast.LENGTH_SHORT).show()
             );
         }
+    }
+
+    // 开始刷新（启动动画+模拟网络请求）
+    private void startRefresh() {
+        isRefreshing = true;
+        ivRefreshCircle.startAnimation(rotateAnimation); // 启动旋转动画
+        // 模拟网络请求（2秒后结束）
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            stopRefresh();
+        }, 2000);
+    }
+
+    // 结束刷新（停止动画+隐藏）
+    private void stopRefresh() {
+        isRefreshing = false;
+        ivRefreshCircle.clearAnimation(); // 停止动画
+        ivRefreshCircle.setVisibility(View.GONE);
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="1000"
+    android:fromDegrees="0"
+    android:toDegrees="360"
+    android:repeatCount="infinite"
+    android:pivotX="50%"
+    android:pivotY="50%"/>
+    <!-- 动画时长（ms） -->
+    <!-- 起始角度 -->
+    <!-- 结束角度 -->
+    <!-- 无限循环 -->
+    <!-- 旋转中心X（圆心） -->
+    <!-- 旋转中心Y（圆心） -->
