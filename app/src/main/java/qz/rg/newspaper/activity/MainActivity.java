@@ -11,12 +11,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import qz.rg.newspaper.R;
 import qz.rg.newspaper.fragment.HomeFragment;
 import qz.rg.newspaper.fragment.MyFragment;
-import qz.rg.newspaper.fragment.VideoFragment;
+import qz.rg.newspaper.fragment.HotFragment;
 //管理底部导航栏和切换不同的 Fragment
 public class MainActivity extends AppCompatActivity {
 
     private HomeFragment homeFragment;
-    private VideoFragment videoFragment;
+    private HotFragment hotFragment;
     private MyFragment myFragment;
 
 
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 初始化 Fragment
         homeFragment = new HomeFragment();
-        videoFragment = new VideoFragment();
+        hotFragment = new HotFragment();
         myFragment = new MyFragment();
 
 
@@ -36,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
         // 添加并隐藏videoFragment和myFragment
         FragmentTransaction initialTransaction = getSupportFragmentManager().beginTransaction();
         initialTransaction.add(R.id.fragment_container, homeFragment);
-        initialTransaction.add(R.id.fragment_container, videoFragment);
+        initialTransaction.add(R.id.fragment_container, hotFragment);
         initialTransaction.add(R.id.fragment_container, myFragment);
-        initialTransaction.hide(videoFragment);
+        initialTransaction.hide(hotFragment);
         initialTransaction.hide(myFragment);
         initialTransaction.commit();
 
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                     showFragment(homeFragment);  // 直接显示已初始化的实例
                     break;
                 case R.id.nav_video:
-                    showFragment(videoFragment);
+                    showFragment(hotFragment);
                     break;
                 case R.id.nav_my:
                     showFragment(myFragment);
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private void showFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(homeFragment);
-        transaction.hide(videoFragment);
+        transaction.hide(hotFragment);
         transaction.hide(myFragment);
         transaction.show(fragment);
         transaction.commit();
