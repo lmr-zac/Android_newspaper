@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import qz.rg.newspaper.activity.FeedbackActivity;
 import qz.rg.newspaper.utils.UserManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,7 +82,6 @@ public class MyFragment extends Fragment {
         items.add(new FunctionItem(R.drawable.ic_collect, "我的收藏", FunctionItem.TYPE_NORMAL));
         items.add(new FunctionItem(R.drawable.ic_history, "浏览历史", FunctionItem.TYPE_NORMAL));
         items.add(new FunctionItem(R.drawable.ic_message, "消息通知", FunctionItem.TYPE_NORMAL));
-        items.add(new FunctionItem(R.drawable.ic_night, "夜间模式", FunctionItem.TYPE_SWITCH));
         items.add(new FunctionItem(R.drawable.ic_settings, "系统设置", FunctionItem.TYPE_NORMAL));
         items.add(new FunctionItem(R.drawable.ic_feedback, "意见反馈", FunctionItem.TYPE_NORMAL));
 
@@ -93,9 +93,7 @@ public class MyFragment extends Fragment {
 
             @Override
             public void onSwitchChanged(int position, boolean isChecked) {
-                if (position == 3) {
-                    toggleNightMode(isChecked);
-                }
+
             }
         });
         rvFunctions.setAdapter(adapter);
@@ -128,25 +126,12 @@ public class MyFragment extends Fragment {
             case "消息通知": // 消息
                 navigateToMessages();
                 break;
-            case "夜间模式": // 设置
-                navigateToSettings();
-                break;
             case "意见反馈": // 反馈
                 navigateToFeedback();
                 break;
         }
     }
 
-
-
-    private void toggleNightMode(boolean enable) {
-        // 实现夜间模式切换逻辑
-        AppCompatDelegate.setDefaultNightMode(
-                enable ? AppCompatDelegate.MODE_NIGHT_YES
-                        : AppCompatDelegate.MODE_NIGHT_NO
-        );
-        requireActivity().recreate();
-    }
 
     // 其他导航方法...
     private void navigateToLoginOrProfile() {
@@ -158,6 +143,8 @@ public class MyFragment extends Fragment {
         // 实现跳转到收藏页面的逻辑（如 Intent 跳转）
     }
     private void navigateToFeedback() {
+        Intent intent = new Intent(requireContext(), FeedbackActivity.class);
+        startActivity(intent);
     }
 
     private void navigateToSettings() {

@@ -21,6 +21,10 @@
             android:name=".activity.NewsDetailActivity"
             android:exported="false" />
         <activity
+            android:name=".activity.FeedbackActivity"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
             android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
