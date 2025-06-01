@@ -14,7 +14,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import qz.rg.newspaper.activity.CollectionActivity;
 import qz.rg.newspaper.activity.FeedbackActivity;
+import qz.rg.newspaper.activity.HistoryActivity;
+import qz.rg.newspaper.activity.MessagesActivity;
+import qz.rg.newspaper.activity.SettingsActivity;
 import qz.rg.newspaper.utils.UserManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -114,6 +118,9 @@ public class MyFragment extends Fragment {
             case "消息通知": // 消息
                 navigateToMessages();
                 break;
+            case "系统设置": // 消息
+                navigateToSettings();
+                break;
             case "意见反馈": // 反馈
                 navigateToFeedback();
                 break;
@@ -164,19 +171,30 @@ public class MyFragment extends Fragment {
         startActivityForResult(intent, 1001); // 使用startActivityForResult
     }
     private void navigateToCollection() {
-        // 实现跳转到收藏页面的逻辑（如 Intent 跳转）
+        // 跳转到我的收藏页面
+        Intent intent = new Intent(requireContext(), CollectionActivity.class);
+        startActivity(intent);
     }
-    private void navigateToFeedback() {
-        Intent intent = new Intent(requireContext(), FeedbackActivity.class);
+
+    private void navigateToHistory() {
+        // 跳转到浏览历史页面
+        Intent intent = new Intent(requireContext(), HistoryActivity.class);
+        startActivity(intent);
+    }
+
+    private void navigateToMessages() {
+        // 跳转到消息通知页面
+        Intent intent = new Intent(requireContext(), MessagesActivity.class);
         startActivity(intent);
     }
 
     private void navigateToSettings() {
+        // 跳转到系统设置页面
+        Intent intent = new Intent(requireContext(), SettingsActivity.class);
+        startActivity(intent);
     }
-
-    private void navigateToMessages() {
-    }
-
-    private void navigateToHistory() {
+    private void navigateToFeedback() {
+        Intent intent = new Intent(requireContext(), FeedbackActivity.class);
+        startActivity(intent);
     }
 }
