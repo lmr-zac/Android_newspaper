@@ -11,6 +11,7 @@
     <color name="text_primary">#212121</color>
     <color name="colorPrimary">#4CAF50</color>
     <color name="text_hint">#FFC107</color>
+    <color name="grey_light">#878683</color>
     <color name="theme_primary">#2196F3</color> <!-- 主题色 -->
     <color name="text_secondary">#616161</color> <!-- 次文字色（浅灰） -->
 </resources>

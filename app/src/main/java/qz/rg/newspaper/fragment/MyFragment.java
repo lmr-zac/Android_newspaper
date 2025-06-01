@@ -1,8 +1,11 @@
 package qz.rg.newspaper.fragment;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -99,21 +102,6 @@ public class MyFragment extends Fragment {
         rvFunctions.setAdapter(adapter);
     }
 
-    private void setupUserInfo() {
-        // 从本地获取用户信息
-        User user = UserManager.getInstance().getCurrentUser(); // 正确：getInstance()
-        if (user != null) {
-            Glide.with(this)
-                    .load(user.getAvatarUrl())
-                    .placeholder(R.drawable.ic_default_avatar)
-                    .into(ivAvatar);
-            tvNickname.setText(user.getNickname());
-        }
-
-        // 点击用户信息区域
-        ivAvatar.setOnClickListener(v -> navigateToLoginOrProfile());
-        tvNickname.setOnClickListener(v -> navigateToLoginOrProfile());
-    }
 
     private void handleFunctionClick(FunctionItem item) {
         switch (item.getTitle()) {
@@ -132,12 +120,48 @@ public class MyFragment extends Fragment {
         }
     }
 
+    private void setupUserInfo() {
+        // 从本地获取用户信息
+        User user = UserManager.getInstance().getCurrentUser();
+        if (user != null) {
+            // 将String类型的资源ID转换为int
+            try {
+                int avatarResId = Integer.parseInt(user.getAvatarUrl());
+                // 加载本地资源ID对应的图片
+                Glide.with(this)
+                        .load(avatarResId)  // 直接加载int类型的资源ID
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .into(ivAvatar);
+                tvNickname.setText(user.getNickname());
+            } catch (NumberFormatException e) {
+                // 处理转换失败的情况（如avatarUrl格式错误）
+                ivAvatar.setImageResource(R.drawable.ic_default_avatar);
+                e.printStackTrace();
+            }
+        } else {
+            // 未登录状态
+            ivAvatar.setImageResource(R.drawable.ic_default_avatar);
+            tvNickname.setText("点击登录");
+        }
+
+        // 点击事件保持不变
+        ivAvatar.setOnClickListener(v -> navigateToLoginOrProfile());
+        tvNickname.setOnClickListener(v -> navigateToLoginOrProfile());
+    }
+
+    // 在MyFragment的onActivityResult方法中添加（需重写）
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001 && resultCode == RESULT_OK) { // 1001是登录请求码
+            setupUserInfo(); // 重新加载用户信息
+        }
+    }
 
     // 其他导航方法...
     private void navigateToLoginOrProfile() {
-        // 启动登录或个人资料 Activity
         Intent intent = new Intent(requireContext(), LoginActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1001); // 使用startActivityForResult
     }
     private void navigateToCollection() {
         // 实现跳转到收藏页面的逻辑（如 Intent 跳转）

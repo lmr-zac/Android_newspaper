@@ -7,8 +7,8 @@ public class User {
     // 其他属性：手机号、邮箱等
 
     // 构造方法
-    public User(String avatarUrl, String nickname) {
-        this.avatarUrl = avatarUrl;
+    public User(int avatarUrl, String nickname) {
+        this.avatarUrl = String.valueOf(avatarUrl);
         this.nickname = nickname;
     }
 
