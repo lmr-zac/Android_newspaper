@@ -121,20 +121,17 @@ public class HomeFragment extends Fragment {
 
     private void fetchDataFromServer() {
         String serverUrl = Constant.SERVER_URL+ "news.json";
-        Log.d("HomeFragment", "请求 URL: " + serverUrl); // 打印 URL
+        //发送GET请求
         HttpUtil.sendGetRequest(serverUrl, new Callback() {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                Log.d("HomeFragment", "响应码: " + response.code()); // 打印状态码
                 if (response.isSuccessful()) {
                     String jsonData = response.body().string();
-                    Log.d("HomeFragment", "响应数据: " + jsonData); // 打印原始数据
                     parseJsonData(jsonData);
                 }
             }
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.e("HomeFragment", "请求失败: " + e.getMessage()); // 打印错误详情
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() ->
                             Toast.makeText(getContext(), "网络请求失败", Toast.LENGTH_SHORT).show()

@@ -86,7 +86,7 @@ public class HotFragment extends Fragment {
      * 从服务器获取热点新闻数据（核心网络请求逻辑）
      */
     private void fetchHotNewsFromServer() {
-        // 构造热点新闻接口URL（假设后端接口为 hot_news.json）
+        // 构造热点新闻接口URL
         String hotNewsUrl = Constant.SERVER_URL + "hot_news.json";
 
         HttpUtil.sendGetRequest(hotNewsUrl, new Callback() {

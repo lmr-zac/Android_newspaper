@@ -43,7 +43,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         ImageView ivBack = findViewById(R.id.iv_back);
         ivBack.setOnClickListener(v -> finish());
 
-        // 获取传递的News对象（需确保News实现Parcelable）
+        // 获取传递的News对象
         News news = getIntent().getParcelableExtra("news");
         if (news == null) {
             finish();
@@ -87,7 +87,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
         iv.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                300 // 图片高度固定300dp，可根据需求调整
+                300 // 图片高度固定300dp
         ));
         iv.setPadding(0, 8, 0, 8);
 
@@ -101,7 +101,6 @@ public class NewsDetailActivity extends AppCompatActivity {
     }
 
     // 添加视频块
-
     private void addVideoView(String videoUrl) {
         // 1. 创建SurfaceView用于显示视频画面
         SurfaceView surfaceView = new SurfaceView(this);
