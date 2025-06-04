@@ -35,12 +35,14 @@
             android:textColor="@color/text_primary"/> <!-- 颜色与其他标题统一 -->
     </LinearLayout>
 
-    <!-- Fragment 容器（从标题栏底部开始，占满剩余空间） -->
-    <FrameLayout
+    <!-- Fragment 容器-->
+    <fragment
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:name="qz.rg.newspaper.fragment.SettingsFragment"
         app:layout_constraintTop_toBottomOf="@id/ll_title_bar"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

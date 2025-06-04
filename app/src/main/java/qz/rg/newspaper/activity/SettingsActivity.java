@@ -17,10 +17,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         findViewById(R.id.iv_back).setOnClickListener(v -> finish());
 
-        // 加载 SettingsFragment
-        SettingsFragment settingsFragment = new SettingsFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, settingsFragment);
-        transaction.commit();
+
     }
 }

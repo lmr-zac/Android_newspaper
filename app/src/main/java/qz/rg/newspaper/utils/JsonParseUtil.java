@@ -20,6 +20,7 @@ public class JsonParseUtil {
      */
     public static <T> T parseObject(String json, Class<T> clazz) {
         try {
+
             return gson.fromJson(json, clazz);//gson.fromJson方法解析JSON数据
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
