@@ -1,6 +1,9 @@
 package qz.rg.newspaper.fragment;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -13,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -56,6 +60,8 @@ public class HomeFragment extends Fragment {
     private boolean isRefreshing = false; // 是否正在刷新
     private static final int TRIGGER_DISTANCE = 150; // 触发刷新的最小下拉距离（dp）
 
+    private ObjectAnimator alphaAnimator;//新增属性动画成员变量
+
     @SuppressLint("ClickableViewAccessibility")
     @Nullable
     @Override
@@ -74,10 +80,8 @@ public class HomeFragment extends Fragment {
 
         ivRefreshCircle = view.findViewById(R.id.iv_refresh_circle);
         recyclerView = view.findViewById(R.id.recycler_view);
-
-        // 初始化旋转动画
-        rotateAnimation = (RotateAnimation) AnimationUtils.loadAnimation(getContext(), R.anim.anim_rotate);
-
+        //调用初始化动画方法
+        initAnimations();
         // 监听RecyclerView的触摸事件
         recyclerView.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
@@ -116,7 +120,15 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-
+    private void initAnimations() {
+        // 初始化旋转动画
+        rotateAnimation = (RotateAnimation) AnimationUtils.loadAnimation(getContext(), R.anim.anim_rotate);
+        // 属性动画：透明度从0.3f到1.0f循环
+        alphaAnimator = ObjectAnimator.ofFloat(ivRefreshCircle, "alpha", 0.3f, 1.0f);
+        alphaAnimator.setDuration(500);
+        alphaAnimator.setRepeatMode(ValueAnimator.REVERSE); // 反向重复（0.3→1→0.3→...）
+        alphaAnimator.setRepeatCount(ValueAnimator.INFINITE); // 无限循环
+    }
 
 
     private void fetchDataFromServer() {
@@ -180,7 +192,9 @@ public class HomeFragment extends Fragment {
     // 开始刷新（启动动画+模拟网络请求）
     private void startRefresh() {
         isRefreshing = true;
+        ivRefreshCircle.setVisibility(View.VISIBLE); // 确保视图可见
         ivRefreshCircle.startAnimation(rotateAnimation); // 启动旋转动画
+        alphaAnimator.start();
         // 模拟网络请求（2秒后结束）
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             stopRefresh();
@@ -190,7 +204,8 @@ public class HomeFragment extends Fragment {
     // 结束刷新（停止动画+隐藏）
     private void stopRefresh() {
         isRefreshing = false;
-        ivRefreshCircle.clearAnimation(); // 停止动画
+        ivRefreshCircle.clearAnimation(); // 停止补间动画
+        alphaAnimator.cancel();// 停止属性动画
         ivRefreshCircle.setVisibility(View.GONE);
     }
 }
